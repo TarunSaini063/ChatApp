@@ -12,11 +12,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -39,11 +43,17 @@ public class ClientBackendController {
     static ServerSocket ss;
     static DataInputStream dis;
     static DataOutputStream dos;
+    ObservableList<String> UsersOnline = FXCollections.observableArrayList();
+    @FXML
+    private ListView<String> OnlineUsers;
     @FXML
     private TextArea Message;
     @FXML
     private TextField Send;
     public static String userName, Password;
+    @FXML
+    private Button sendButton;
+
     public ClientBackendController() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml"));
         fxmlLoader.setController(this);
@@ -53,7 +63,26 @@ public class ClientBackendController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
+    }
+
+    @FXML
+    void SelectedUser(MouseEvent event) throws IOException {
+        String Users = (String) OnlineUsers.getSelectionModel().getSelectedItem();
+        if (Users.isEmpty() || Users == null) {
+
+        } else {
+            dos.writeUTF("ChatWith" + "<:>" + Users);
+            dos.flush();
+            System.out.println("ChatWith" + "<:>" + Users + "<:>" + userName);
+        }
+    }
+    public void UpdatedUsers(String msg)
+    {
+        UsersOnline.removeAll();
+        String []users=msg.split("<:>");
+        UsersOnline.addAll(users);
+        OnlineUsers.getItems().setAll(UsersOnline);
     }
     @FXML
     void SendMessage(MouseEvent event) throws IOException {
@@ -69,7 +98,15 @@ public class ClientBackendController {
                 String msg = dis.readUTF();
                 System.out.println("read message= " + msg);
                 msg = new String(System.lineSeparator() + System.lineSeparator() + msg);
-                Message.appendText(msg);
+                if(msg.startsWith("UpdatesUsers"))
+                {
+                    UpdatedUsers(msg.substring(12));
+                }
+                else if(msg.startsWith("PreviousChat"))
+                {
+                    Message.setText(msg.substring(17));
+                }
+                else Message.appendText(msg);
                 Thread.sleep(100);
             }
         }
@@ -77,7 +114,6 @@ public class ClientBackendController {
 
     public void initialize(Stage stage, String userName, String Password) {
 
-        
         stage.setTitle(userName);
         stage.setScene(scene);
         stage.hide();
@@ -92,6 +128,6 @@ public class ClientBackendController {
         }
         Thread th = new Thread(Read);
         th.setDaemon(true);
-       // th.start();
+        th.start();
     }
 }
