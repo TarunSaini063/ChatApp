@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+      <TextArea fx:id="Message" layoutX="110.0" layoutY="73.0" prefHeight="200.0" prefWidth="200.0" promptText="Message" />
+      <TextField fx:id="Send" layoutX="354.0" layoutY="73.0" promptText="write message" />
+      <Button fx:id="sendButton" layoutX="409.0" layoutY="127.0" mnemonicParsing="false" onMouseClicked="#SendMessage" text="send" />
+      <Label layoutX="84.0" layoutY="29.0" prefHeight="26.0" prefWidth="115.0" text="Server" textFill="#e41515">
+      </Label>
+   </children>
+</AnchorPane>
