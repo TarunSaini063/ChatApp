@@ -27,6 +27,9 @@ public class Server_to_client implements Runnable {
     DataOutputStream toClient;
     String text;
     String userName;
+    String Password;
+    String chatWith;
+    String chats;
 
     Server_to_client(Server_Info server, Socket clientSocket) {
         System.out.println(System.lineSeparator() + "New client arrive");
@@ -56,11 +59,19 @@ public class Server_to_client implements Runnable {
                 } else if (text.startsWith("login")) {
                     String[] arr = text.split("<:>");
                     server.addUser(clientSocket, arr[1], arr[2]);
+                    this.userName = arr[1];
+                    this.Password = arr[2];
+                    System.out.println("(in server to client)Username of connected user in server to client "+this.userName);
                     System.out.println(arr[1] + " in thread");
-                    //server.sentPrivateMessage(clientSocket, arr[0], "Login", arr[1]);
-                } else {
-                    String[] arr = text.split("<:>");
-                    server.sentPrivateMessage(clientSocket, arr[0], arr[2], arr[1]);
+                } else if (text.startsWith("ChatWith")){
+                    chatWith=text.substring(8);
+                    //System.out.println("inside server to client before getting client info "+ chatWith);
+                    chats="Refress<:>"+server.getInfoForClient(clientSocket,userName, chatWith);
+                    System.out.println("inside server to client "+ chats);
+                    server.sentPrivateMessage(clientSocket, userName,chats,chatWith);
+                }else
+                {
+                    server.sentPrivateMessage(clientSocket, userName,text,chatWith);
                 }
 
             } catch (IOException e) {

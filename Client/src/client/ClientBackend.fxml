@@ -7,14 +7,14 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="771.0" prefWidth="1033.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ClientBackendController">
+<AnchorPane id="AnchorPane" prefHeight="771.0" prefWidth="1033.0" xmlns:fx="http://javafx.com/fxml/1">
     <children>
       <TextArea fx:id="Message" layoutX="110.0" layoutY="73.0" prefHeight="504.0" prefWidth="506.0" promptText="Message" />
       <TextField fx:id="Send" layoutX="114.0" layoutY="632.0" prefHeight="26.0" prefWidth="422.0" promptText="write message" />
-      <Button fx:id="sendButton" layoutX="566.0" layoutY="632.0" mnemonicParsing="false" onMouseClicked="#SendMessage" text="send" />
+      <Button fx:id="sendButton" layoutX="566.0" layoutY="632.0" mnemonicParsing="false" onAction="#SendMessage" text="send" />
       <Label layoutX="84.0" layoutY="29.0" prefHeight="26.0" prefWidth="115.0" text="Client" textFill="#e41515">
       </Label>
-      <ListView fx:id="OnlineUsers" layoutX="722.0" layoutY="73.0" onMouseClicked="SelectedUser" prefHeight="504.0" prefWidth="277.0" />
+      <ListView fx:id="OnlineUsers" layoutX="722.0" layoutY="73.0" onMouseClicked="#SelectedUser" prefHeight="504.0" prefWidth="277.0" />
       <Label layoutX="722.0" layoutY="29.0" prefHeight="26.0" prefWidth="115.0" text="Online Users" textFill="#e41515" />
    </children>
 </AnchorPane>

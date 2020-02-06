@@ -12,9 +12,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -53,6 +55,7 @@ public class ClientBackendController {
     public static String userName, Password;
     @FXML
     private Button sendButton;
+    String chatWith;
 
     public ClientBackendController() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml"));
@@ -68,28 +71,41 @@ public class ClientBackendController {
 
     @FXML
     void SelectedUser(MouseEvent event) throws IOException {
-        String Users = (String) OnlineUsers.getSelectionModel().getSelectedItem();
-        if (Users.isEmpty() || Users == null) {
+        chatWith = (String) OnlineUsers.getSelectionModel().getSelectedItem();
+        if (chatWith.isEmpty() || chatWith == null) {
 
         } else {
-            dos.writeUTF("ChatWith" + "<:>" + Users);
+            dos.writeUTF("ChatWith" + chatWith);
             dos.flush();
-            System.out.println("ChatWith" + "<:>" + Users + "<:>" + userName);
+            System.out.println("ChatWith" + "<:>" + chatWith + "<:>" + userName);
         }
     }
-    public void UpdatedUsers(String msg)
-    {
-        UsersOnline.removeAll();
-        String []users=msg.split("<:>");
-        UsersOnline.addAll(users);
-        OnlineUsers.getItems().setAll(UsersOnline);
+
+    public void UpdatedUsers(String msg) {
+        String[] users = msg.split("<:>");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                UsersOnline.clear();
+                UsersOnline.addAll(users);
+                OnlineUsers.setItems(UsersOnline);
+            }
+        });
+
     }
+
     @FXML
-    void SendMessage(MouseEvent event) throws IOException {
-        dos.writeUTF(userName + "<:>" + Send.getText());
+    void SendMessage(ActionEvent event) throws IOException {
+        dos.writeUTF(Send.getText());
         dos.flush();
         System.out.println("send message: " + Send.getText());
-        Send.setText("");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Send.setText("");
+            }
+        });
+
     }
     Task Read = new Task<Void>() {
         @Override
@@ -97,17 +113,37 @@ public class ClientBackendController {
             while (true) {
                 String msg = dis.readUTF();
                 System.out.println("read message= " + msg);
-                msg = new String(System.lineSeparator() + System.lineSeparator() + msg);
-                if(msg.startsWith("UpdatesUsers"))
-                {
-                    UpdatedUsers(msg.substring(12));
+                if (msg.startsWith("UpdatesUsers<:>")) {
+                    System.out.println("new user added");
+                    UpdatedUsers(msg.substring(15));
+                } else if (msg.startsWith("Refress<:>")) {
+                    String[] chats = msg.substring(10).split("<:>");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Message.setText("");
+
+                        }
+                    });
+                    for (String lines : chats) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Message.appendText(lines + System.lineSeparator());
+                            }
+                        });
+
+                    }
+
+                } else {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Message.appendText(msg);
+                        }
+                    });
                 }
-                else if(msg.startsWith("PreviousChat"))
-                {
-                    Message.setText(msg.substring(17));
-                }
-                else Message.appendText(msg);
-                Thread.sleep(100);
+                //Thread.sleep(100);
             }
         }
     };
