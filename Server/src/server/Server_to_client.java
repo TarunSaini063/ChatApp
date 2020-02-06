@@ -61,16 +61,15 @@ public class Server_to_client implements Runnable {
                     server.addUser(clientSocket, arr[1], arr[2]);
                     this.userName = arr[1];
                     this.Password = arr[2];
-                    System.out.println("(in server to client)Username of connected user in server to client "+this.userName);
+                    System.out.println("(in server to client)Username of connected user in server to client " + this.userName);
                     System.out.println(arr[1] + " in thread");
-                } else if (text.startsWith("ChatWith")){
-                    chatWith=text.substring(8);
-                    chats=server.getInfoForClient(clientSocket,userName, chatWith);
-                    System.out.println("inside server to client "+ chats);
-                    server.sentPrivateMessage(clientSocket, userName,chats,chatWith);
-                }else
-                {
-                    server.sentPrivateMessage(clientSocket, userName,text,chatWith);
+                } else if (text.startsWith("ChatWith")) {
+                    chatWith = text.substring(8);
+                    chats = server.getInfoForClient(clientSocket, userName, chatWith);
+                    System.out.println("inside server to client " + chats);
+                    server.sentPrivateMessage(clientSocket, userName, chats, chatWith);
+                } else {
+                    server.sentPrivateMessage(clientSocket, userName, text, chatWith);
                 }
 
             } catch (IOException e) {

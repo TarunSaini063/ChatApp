@@ -18,12 +18,14 @@ public class Client_info {
     private Socket socket;
     private String userName;
     private String password;
-     Map<String, String> chats = new HashMap<String, String>();
+    Map<String, String> chats = new HashMap<String, String>();
+
     public Client_info(Socket socket, String userName, String password) {
         setSocket(socket);
         setUserName(userName);
         setPassword(password);
     }
+
     public String getUserName() {
         return userName;
     }
@@ -35,26 +37,22 @@ public class Client_info {
     public Socket getSocket() {
         return socket;
     }
-    public String getMessage(String chatWith)
-    {
-        String message="";
-        message=chats.get(chatWith);
+
+    public String getMessage(String chatWith) {
+        String message = "";
+        message = chats.get(chatWith);
         return message;
     }
-    public void setMessage(String chatWith,String message)
-    {
+
+    public void setMessage(String chatWith, String message) {
         String existing = chats.get(chatWith);
-        chats.put(chatWith, existing == null ? message : existing +"<:>"+message);
+        chats.put(chatWith, existing == null ? message : existing + "<:>" + message);
     }
+
     public void setSocket(Socket socket) {
         this.socket = socket;
     }
-
-    @Override
-    public String toString() {
-        return userName;
-    }
-
+    
     public String getPassword() {
         return password;
     }

@@ -21,6 +21,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import static javafx.scene.control.Alert.AlertType.INFORMATION;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -74,11 +77,22 @@ public class ClientBackendController {
         chatWith = (String) OnlineUsers.getSelectionModel().getSelectedItem();
         if (chatWith.isEmpty() || chatWith == null) {
 
+        } else if (chatWith.equals(userName)) {
+            Alert sameclient = new Alert(AlertType.INFORMATION);
+            sameclient.setTitle("Same Client");
+            sameclient.setContentText("Cannot chat with yourself");
+            sameclient.setHeaderText("Hello " + userName);
+            sameclient.show();
+            chatWith = null;
         } else {
             dos.writeUTF("ChatWith" + chatWith);
             dos.flush();
             System.out.println("ChatWith" + "<:>" + chatWith + "<:>" + userName);
+            Message.setDisable(false);
+            sendButton.setDisable(false);
+            Send.setDisable(false);
         }
+
     }
 
     public void UpdatedUsers(String msg) {
@@ -96,15 +110,24 @@ public class ClientBackendController {
 
     @FXML
     void SendMessage(ActionEvent event) throws IOException {
-        dos.writeUTF(Send.getText());
-        dos.flush();
-        System.out.println("send message: " + Send.getText());
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Send.setText("");
-            }
-        });
+        if (chatWith.equals(userName)) {
+            Alert sameclient = new Alert(AlertType.INFORMATION);
+            sameclient.setTitle("Same Client");
+            sameclient.setContentText("Cannot chat with yourself");
+            sameclient.setHeaderText("Hello " + userName);
+            sameclient.show();
+        } else {
+            dos.writeUTF(Send.getText());
+            dos.flush();
+            System.out.println("send message: " + Send.getText());
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Message.appendText(userName + "--->" + Send.getText() + System.lineSeparator());
+                    Send.setText("");
+                }
+            });
+        }
 
     }
     Task Read = new Task<Void>() {
@@ -139,7 +162,7 @@ public class ClientBackendController {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            Message.appendText(msg+System.lineSeparator());
+                            Message.appendText(msg + System.lineSeparator());
                         }
                     });
                 }
@@ -162,6 +185,10 @@ public class ClientBackendController {
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+        Message.setDisable(true);
+        Message.setEditable(false);
+        sendButton.setDisable(true);
+        Send.setDisable(true);
         Thread th = new Thread(Read);
         th.setDaemon(true);
         th.start();
