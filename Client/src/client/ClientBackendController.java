@@ -139,7 +139,7 @@ public class ClientBackendController {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            Message.appendText(msg);
+                            Message.appendText(msg+System.lineSeparator());
                         }
                     });
                 }

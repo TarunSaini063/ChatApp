@@ -65,8 +65,7 @@ public class Server_to_client implements Runnable {
                     System.out.println(arr[1] + " in thread");
                 } else if (text.startsWith("ChatWith")){
                     chatWith=text.substring(8);
-                    //System.out.println("inside server to client before getting client info "+ chatWith);
-                    chats="Refress<:>"+server.getInfoForClient(clientSocket,userName, chatWith);
+                    chats=server.getInfoForClient(clientSocket,userName, chatWith);
                     System.out.println("inside server to client "+ chats);
                     server.sentPrivateMessage(clientSocket, userName,chats,chatWith);
                 }else

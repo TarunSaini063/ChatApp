@@ -159,11 +159,12 @@ public class Server_Info extends Application implements Initializable, Runnable 
     }
 
     void sentPrivateMessage(Socket clientSocket, String fromClient, String message, String toClient) throws IOException {
+        Client_info chatfrom = null, chatto = null;
         if (message.startsWith("Refress<:>")) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Log.appendText(message);
+                    Log.appendText(message + System.lineSeparator());
                 }
             });
             sendMessageToClient(clientSocket, message);
@@ -171,30 +172,32 @@ public class Server_Info extends Application implements Initializable, Runnable 
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Log.appendText(System.lineSeparator() + "Private message(from->" + fromClient + " to->" + toClient + ") Message: (" + message + ")");
+                    Log.appendText(System.lineSeparator() + "Private message(from->" + fromClient + " to->" + toClient + ") Message: (" + message + ")" + System.lineSeparator());
                 }
             });
             for (Client_info client : client_info) {
                 System.out.println("printing in private message for serching to message receiver " + client.getUserName());
                 if (client.getUserName().equals(toClient)) {
-                    client.setMessage(toClient, fromClient + "--->" + message);
-                    sendMessageToClient(client.getSocket(), fromClient + " -->" + message);
+                    chatto = client;
                     break;
                 }
             }
             for (Client_info client : client_info) {
                 System.out.println("updating message for sender chats");
                 if (client.getUserName().equals(fromClient)) {
-                    client.setMessage(fromClient, fromClient + "--->" + message);
+                    chatfrom = client;
                     break;
                 }
             }
+            chatto.setMessage(toClient, fromClient + "--->" + message);
+            chatfrom.setMessage(toClient, fromClient + "--->" + message);
+            sendMessageToClient(chatto.getSocket(), fromClient + " -->" + message);
+
         }
     }
 
     boolean addUser(Socket clientSocket, String userName, String password) throws IOException {
         System.out.println(userName + " Adden in add user");
-        UsersOnline.clear();
         String msg = "";
         for (Client_info client : client_info) {
             if (msg == "") {
@@ -210,10 +213,11 @@ public class Server_Info extends Application implements Initializable, Runnable 
         }
         System.out.println("in add users current users = " + msg);
         String[] users = msg.split("<:>");
-        UsersOnline.addAll(users);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                UsersOnline.clear();
+                UsersOnline.addAll(users);
                 Users.getItems().setAll(UsersOnline);
             }
         });
