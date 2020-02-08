@@ -23,7 +23,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import static javafx.scene.control.Alert.AlertType.INFORMATION;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -75,7 +74,7 @@ public class ClientBackendController {
     @FXML
     void SelectedUser(MouseEvent event) throws IOException {
         chatWith = (String) OnlineUsers.getSelectionModel().getSelectedItem();
-        if (chatWith.isEmpty() || chatWith == null) {
+        if (chatWith == null) {
 
         } else if (chatWith.equals(userName)) {
             Alert sameclient = new Alert(AlertType.INFORMATION);
@@ -84,6 +83,9 @@ public class ClientBackendController {
             sameclient.setHeaderText("Hello " + userName);
             sameclient.show();
             chatWith = null;
+            Message.setDisable(true);
+            sendButton.setDisable(true);
+            Send.setDisable(true);
         } else {
             dos.writeUTF("ChatWith" + chatWith);
             dos.flush();
@@ -135,7 +137,7 @@ public class ClientBackendController {
         public Void call() throws Exception {
             while (true) {
                 String msg = dis.readUTF();
-                System.out.println("read message= " + msg);
+                System.out.println("read message= " + msg+" mesage for "+userName);
                 if (msg.startsWith("UpdatesUsers<:>")) {
                     System.out.println("new user added");
                     UpdatedUsers(msg.substring(15));
@@ -162,11 +164,12 @@ public class ClientBackendController {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            Message.appendText(msg + System.lineSeparator());
+                            if (chatWith!=null&&msg.startsWith(chatWith)) {
+                                Message.appendText(msg + System.lineSeparator());
+                            }
                         }
                     });
                 }
-                //Thread.sleep(100);
             }
         }
     };

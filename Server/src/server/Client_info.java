@@ -41,11 +41,13 @@ public class Client_info {
     public String getMessage(String chatWith) {
         String message = "";
         message = chats.get(chatWith);
+        System.out.println("get message chat with "+chatWith+" = "+message);
         return message;
     }
 
     public void setMessage(String chatWith, String message) {
         String existing = chats.get(chatWith);
+        System.out.println("set message chat with "+chatWith);//+" = "+existing == null ? message : existing + "<:>" + message);
         chats.put(chatWith, existing == null ? message : existing + "<:>" + message);
     }
 

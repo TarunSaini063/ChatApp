@@ -69,6 +69,7 @@ public class Server_to_client implements Runnable {
                     System.out.println("inside server to client " + chats);
                     server.sentPrivateMessage(clientSocket, userName, chats, chatWith);
                 } else {
+                    System.out.println("Simple message server to client " + chats+" username "+userName+" chatwith "+chatWith);
                     server.sentPrivateMessage(clientSocket, userName, text, chatWith);
                 }
 

@@ -159,7 +159,6 @@ public class Server_Info extends Application implements Initializable, Runnable 
     }
 
     void sentPrivateMessage(Socket clientSocket, String fromClient, String message, String toClient) throws IOException {
-        Client_info chatfrom = null, chatto = null;
         if (message.startsWith("Refress<:>")) {
             Platform.runLater(new Runnable() {
                 @Override
@@ -172,27 +171,25 @@ public class Server_Info extends Application implements Initializable, Runnable 
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Log.appendText(System.lineSeparator() + "Private message(from->" + fromClient + " to->" + toClient + ") Message: (" + message + ")" + System.lineSeparator());
+                    Log.appendText(System.lineSeparator() + "Message(from-> " + fromClient + " to->" + toClient + ") Message: (" + message + ")" + System.lineSeparator());
                 }
             });
             for (Client_info client : client_info) {
-                System.out.println("printing in private message for serching to message receiver " + client.getUserName());
                 if (client.getUserName().equals(toClient)) {
-                    chatto = client;
+                    System.out.println("updating message for receiver chats " + client.getUserName());
+                    client.setMessage(fromClient, fromClient + "--->" + message);
+                    sendMessageToClient(client.getSocket(), fromClient + " -->" + message);
                     break;
                 }
             }
             for (Client_info client : client_info) {
-                System.out.println("updating message for sender chats");
+
                 if (client.getUserName().equals(fromClient)) {
-                    chatfrom = client;
+                    client.setMessage(toClient, fromClient + "--->" + message);
+                    System.out.println("updating message for sender chats " + client.getUserName());
                     break;
                 }
             }
-            chatto.setMessage(toClient, fromClient + "--->" + message);
-            chatfrom.setMessage(toClient, fromClient + "--->" + message);
-            sendMessageToClient(chatto.getSocket(), fromClient + " -->" + message);
-
         }
     }
 
