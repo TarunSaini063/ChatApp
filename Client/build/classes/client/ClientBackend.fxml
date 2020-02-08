@@ -16,5 +16,8 @@
       </Label>
       <ListView fx:id="OnlineUsers" layoutX="722.0" layoutY="73.0" onMouseClicked="#SelectedUser" prefHeight="504.0" prefWidth="277.0" />
       <Label layoutX="722.0" layoutY="29.0" prefHeight="26.0" prefWidth="115.0" text="Online Users" textFill="#e41515" />
+      <Button fx:id="SelectFile" layoutX="566.0" layoutY="674.0" mnemonicParsing="false" onAction="#SelectFile" text="Select File" />
+      <TextField fx:id="FileName" layoutX="114.0" layoutY="674.0" prefHeight="26.0" prefWidth="422.0" promptText="Select File" />
+      <Button fx:id="SendFile" layoutX="566.0" layoutY="711.0" mnemonicParsing="false" onAction="#SendFile" text="Send File" />
    </children>
 </AnchorPane>

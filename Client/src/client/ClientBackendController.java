@@ -7,6 +7,7 @@ package client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -28,6 +29,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -42,7 +44,6 @@ public class ClientBackendController {
      */
     private Parent parent;
     private Scene scene;
-    private Stage stage;
     static Socket s;
     static ServerSocket ss;
     static DataInputStream dis;
@@ -58,6 +59,12 @@ public class ClientBackendController {
     @FXML
     private Button sendButton;
     String chatWith;
+    @FXML
+    private TextField FileName;
+    @FXML
+    private Button SelectFile;
+    @FXML
+    private Button SendFile;
 
     public ClientBackendController() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml"));
@@ -86,6 +93,8 @@ public class ClientBackendController {
             Message.setDisable(true);
             sendButton.setDisable(true);
             Send.setDisable(true);
+            FileName.setDisable(true);
+            SelectFile.setDisable(true);
         } else {
             dos.writeUTF("ChatWith" + chatWith);
             dos.flush();
@@ -93,6 +102,8 @@ public class ClientBackendController {
             Message.setDisable(false);
             sendButton.setDisable(false);
             Send.setDisable(false);
+            FileName.setDisable(false);
+            SelectFile.setDisable(false);
         }
 
     }
@@ -132,12 +143,33 @@ public class ClientBackendController {
         }
 
     }
+
+    @FXML
+    void SendFile(ActionEvent event) {
+        SendFile.setDisable(true);
+    }
+
+    @FXML
+    void SelectFile(ActionEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open File");
+        File file = chooser.showOpenDialog(Send.getScene().getWindow());
+        String file_name;
+        if (file != null) {
+            file_name = file.getName();
+            FileName.setText(file_name);
+            SendFile.setDisable(false);
+        } else {
+            FileName.setText("Error in Selecting File");
+        }
+    }
+
     Task Read = new Task<Void>() {
         @Override
         public Void call() throws Exception {
             while (true) {
                 String msg = dis.readUTF();
-                System.out.println("read message= " + msg+" mesage for "+userName);
+                System.out.println("read message= " + msg + " mesage for " + userName);
                 if (msg.startsWith("UpdatesUsers<:>")) {
                     System.out.println("new user added");
                     UpdatedUsers(msg.substring(15));
@@ -164,7 +196,7 @@ public class ClientBackendController {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            if (chatWith!=null&&msg.startsWith(chatWith)) {
+                            if (chatWith != null && msg.startsWith(chatWith)) {
                                 Message.appendText(msg + System.lineSeparator());
                             }
                         }
@@ -175,8 +207,8 @@ public class ClientBackendController {
     };
 
     public void initialize(Stage stage, String userName, String Password) {
-
         stage.setTitle(userName);
+        //SendFile.managedProperty().bind(SendFile.visibleProperty());
         stage.setScene(scene);
         stage.hide();
         stage.show();
@@ -192,6 +224,10 @@ public class ClientBackendController {
         Message.setEditable(false);
         sendButton.setDisable(true);
         Send.setDisable(true);
+        SelectFile.setDisable(true);
+        FileName.setDisable(true);
+        SendFile.setDisable(true);
+        FileName.setEditable(false);
         Thread th = new Thread(Read);
         th.setDaemon(true);
         th.start();
