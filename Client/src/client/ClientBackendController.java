@@ -5,14 +5,11 @@
  */
 package client;
 
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -151,7 +148,7 @@ public class ClientBackendController {
 
     @FXML
     void SendFile(ActionEvent event) throws IOException {
-        dos.writeUTF("SEND<:>" + file.getName());
+        dos.writeUTF("SEND<:>" + file.getName()+"<:>"+file.length());
         dos.flush();
         SendFile.setDisable(true);
         new Thread(new SendingFile(s, file.getAbsolutePath(), chatWith, userName)).start();
@@ -172,8 +169,8 @@ public class ClientBackendController {
         }
     }
 
-    void ReciveFile(String fileName) throws FileNotFoundException, IOException {
-        new Thread(new ReceivingFile(s)).start();
+    void ReciveFile(String details) throws FileNotFoundException, IOException {
+        new Thread(new ReceivingFile(s,details)).start();
     }
     Task Read = new Task<Void>() {
         @Override
@@ -200,7 +197,8 @@ public class ClientBackendController {
                             }
                         });
                     }
-
+                } else if (msg.startsWith("RECIEVE<:>")) {
+                    ReciveFile(msg.substring(10));
                 } else {
                     Platform.runLater(new Runnable() {
                         @Override
@@ -217,7 +215,6 @@ public class ClientBackendController {
 
     public void initialize(Stage stage, String userName, String Password) {
         stage.setTitle(userName);
-        //SendFile.managedProperty().bind(SendFile.visibleProperty());
         stage.setScene(scene);
         stage.hide();
         stage.show();
