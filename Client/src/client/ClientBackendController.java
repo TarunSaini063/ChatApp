@@ -176,6 +176,11 @@ public class ClientBackendController {
         @Override
         public Void call() throws Exception {
             while (true) {
+                if(dis==null)
+                {
+                    System.out.println("dis is null ");
+                    dis=new DataInputStream(s.getInputStream());
+                }
                 String msg = dis.readUTF();
                 System.out.println("read message= " + msg + " mesage for " + userName);
                 if (msg.startsWith("UpdatesUsers<:>")) {

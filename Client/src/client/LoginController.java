@@ -47,11 +47,6 @@ public class LoginController {
     void login(ActionEvent event) throws IOException {
         if (username.getText().trim().length() > 0 && password.getText().trim().length() > 0) {
             clientBackendController = new ClientBackendController();
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-            }
             clientBackendController.initialize(stage, username.getText().trim(), password.getText().trim());
         }
     }

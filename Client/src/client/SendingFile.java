@@ -25,7 +25,7 @@ public class SendingFile implements Runnable {
     protected String file;
     protected String receiver;
     protected String sender;
-    private final int BUFFER_SIZE = 100;
+    private final int BUFFER_SIZE = 1024;
 
     public SendingFile(Socket soc, String file, String receiver, String sender) {
         this.socket = soc;
@@ -37,22 +37,18 @@ public class SendingFile implements Runnable {
     @Override
     public void run() {
         try {
-            dos = new DataOutputStream(socket.getOutputStream());
             File filename = new File(file);
-            int len = (int) filename.length();
-            int filesize = (int) Math.ceil(len / BUFFER_SIZE);
             InputStream input = new FileInputStream(filename);
             OutputStream output = socket.getOutputStream();
             BufferedInputStream bis = new BufferedInputStream(input);
             byte[] buffer = new byte[BUFFER_SIZE];
-            int count, percent = 0;
+            int count;
             while ((count = bis.read(buffer)) > 0) {
-                percent = percent + count;
-                int p = (percent / filesize);
                 output.write(buffer, 0, count);
-            }
+                System.out.println("Sending "+filename.getAbsolutePath()+" "+count+" bytes");
+            } 
             output.flush();
-            output.close();
+//            output.close();
         } catch (IOException e) {
             System.out.println("[SendFile]: " + e.getMessage());
         }

@@ -5,14 +5,18 @@
  */
 package client;
 
+import static client.ClientBackendController.userName;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.StringTokenizer;
+import javafx.scene.control.Alert;
+import javax.swing.ProgressMonitorInputStream;
 
 /**
  *
@@ -24,33 +28,46 @@ public class ReceivingFile implements Runnable {
     protected DataInputStream dis;
     protected DataOutputStream dos;
     protected StringTokenizer st;
-    private final int BUFFER_SIZE = 100;
-    private int filesize;
+    private final int BUFFER_SIZE = 1024;
     private String filename;
+    private String ReceiveFrom;
 
     ReceivingFile(Socket soc, String details) {
         this.socket = soc;
-        filesize = Integer.parseInt(details.split("<;>")[1]);
-        filename = details.split("<;>")[0];
+        filename = details.split("<:>")[0];
+        ReceiveFrom = details.split("<:>")[2];
     }
 
     @Override
     public void run() {
         try {
-
-            String path = "/home/tarun/Music/" + filename;
+            File f = new File("/home/tarun/Music/" + ReceiveFrom);
+            if (f.exists() && !f.isDirectory() || !f.exists()) {
+                System.out.println("Creating Directory " + ReceiveFrom);
+                f.mkdir();
+            }
+            String path = "/home/tarun/Music/" + ReceiveFrom + "/" + filename;
+            System.out.println("Start Writing file " + path);
             FileOutputStream fos = new FileOutputStream(path);
             InputStream input = socket.getInputStream();
             BufferedInputStream bis = new BufferedInputStream(input);
             byte[] buffer = new byte[BUFFER_SIZE];
-            int count, percent = 0;
-            while ((count = bis.read(buffer)) != -1) {
-                percent = percent + count;
-                int p = (percent / filesize);
+            int count;
+            while ((count = bis.read(buffer)) > 0) {
+                System.out.println("start receiving file .." + filename+" count "+count);
                 fos.write(buffer, 0, count);
             }
+            System.out.println("Writing file ");
             fos.flush();
             fos.close();
+            if (input != null) {
+//                input.close();
+            }
+//            Alert sameclient = new Alert(Alert.AlertType.INFORMATION);
+//            sameclient.setTitle("File Received");
+//            sameclient.setContentText(filename+" Received from "+ReceiveFrom);
+//            sameclient.setHeaderText("Hello");
+//            sameclient.show();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
