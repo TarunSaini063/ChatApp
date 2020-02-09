@@ -68,7 +68,9 @@ public class Server_to_client implements Runnable {
                     chats = server.getInfoForClient(clientSocket, userName, chatWith);
                     System.out.println("inside server to client " + chats);
                     server.sentPrivateMessage(clientSocket, userName, chats, chatWith);
-                } else {
+                }  else if (text.startsWith("SEND<:>")) {
+                    server.ReciveFile(clientSocket,chatWith+"<:>"+text.substring(7));
+                }else {
                     System.out.println("Simple message server to client " + chats+" username "+userName+" chatwith "+chatWith);
                     server.sentPrivateMessage(clientSocket, userName, text, chatWith);
                 }

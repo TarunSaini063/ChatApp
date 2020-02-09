@@ -5,8 +5,14 @@
  */
 package server;
 
+import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -56,7 +62,8 @@ public class Server_Info extends Application implements Initializable, Runnable 
     DataOutputStream dos;
     ArrayList<Client_info> client_info;
     ArrayList<String> roomMessages;
-
+    private File file;
+    private final int BUFFER_SIZE=100;
     public static void main(String[] args) {
         launch(args);
     }
@@ -283,6 +290,30 @@ public class Server_Info extends Application implements Initializable, Runnable 
         });
 
         Thread.sleep(500);
+    }
+
+    void ReciveFile(Socket sock, String senderInfo) throws FileNotFoundException, IOException {
+        String sendto;
+        String[] details = senderInfo.split("<:>");
+        sendto = details[0];
+        Socket sendtosocket = null;
+        for (Client_info client : client_info) {
+            if (client.getUserName().equals(sendto)) {
+                sendtosocket = client.getSocket();
+                break;
+            }
+        }
+        if (sendtosocket != null) {
+            InputStream input = sock.getInputStream();
+            OutputStream sendFile = sendtosocket.getOutputStream();
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int cnt;
+            while ((cnt = input.read(buffer)) > 0) {
+                sendFile.write(buffer, 0, cnt);
+            }
+            sendFile.flush();
+            sendFile.close();
+        }
     }
 
     @Override
