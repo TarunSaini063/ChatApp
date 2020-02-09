@@ -5,11 +5,9 @@
  */
 package server;
 
-import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,7 +61,8 @@ public class Server_Info extends Application implements Initializable, Runnable 
     ArrayList<Client_info> client_info;
     ArrayList<String> roomMessages;
     private File file;
-    private final int BUFFER_SIZE=100;
+    private final int BUFFER_SIZE = 100;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -303,6 +302,7 @@ public class Server_Info extends Application implements Initializable, Runnable 
                 break;
             }
         }
+        sendMessageToClient(sendtosocket, "RECIEVE<:>"+details[1]+"<:>"+details[2]);
         if (sendtosocket != null) {
             InputStream input = sock.getInputStream();
             OutputStream sendFile = sendtosocket.getOutputStream();
