@@ -52,6 +52,10 @@ public class Server_to_client implements Runnable {
     public void run() {
         while (thread != null) {
             try {
+                if(fromClient==null)
+                {
+                    fromClient=new DataInputStream(clientSocket.getInputStream());
+                }
                 String text = fromClient.readUTF();
                 System.out.println("Message receive " + text);
                 if (text.startsWith("exit")) {
@@ -69,6 +73,7 @@ public class Server_to_client implements Runnable {
                     System.out.println("inside server to client " + chats);
                     server.sentPrivateMessage(clientSocket, userName, chats, chatWith);
                 }  else if (text.startsWith("SEND<:>")) {
+                    System.out.println("Sending to receive function "+chatWith+"<:>"+text.substring(7));
                     server.ReciveFile(clientSocket,chatWith+"<:>"+text.substring(7));
                 }else {
                     System.out.println("Simple message server to client " + chats+" username "+userName+" chatwith "+chatWith);

@@ -61,7 +61,7 @@ public class Server_Info extends Application implements Initializable, Runnable 
     ArrayList<Client_info> client_info;
     ArrayList<String> roomMessages;
     private File file;
-    private final int BUFFER_SIZE = 100;
+    private final int BUFFER_SIZE = 1024;
 
     public static void main(String[] args) {
         launch(args);
@@ -302,17 +302,19 @@ public class Server_Info extends Application implements Initializable, Runnable 
                 break;
             }
         }
-        sendMessageToClient(sendtosocket, "RECIEVE<:>"+details[1]+"<:>"+details[2]);
         if (sendtosocket != null) {
+            sendMessageToClient(sendtosocket, "RECIEVE<:>"+details[1]+"<:>"+details[2]+"<:>"+details[0]);
             InputStream input = sock.getInputStream();
             OutputStream sendFile = sendtosocket.getOutputStream();
             byte[] buffer = new byte[BUFFER_SIZE];
             int cnt;
             while ((cnt = input.read(buffer)) > 0) {
                 sendFile.write(buffer, 0, cnt);
+                System.out.println("sending file... "+cnt);
             }
             sendFile.flush();
-            sendFile.close();
+            System.out.println("Closing OutputStream");
+//            sendFile.close();
         }
     }
 
