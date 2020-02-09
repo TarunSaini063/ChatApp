@@ -5,10 +5,14 @@
  */
 package client;
 
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -65,6 +69,7 @@ public class ClientBackendController {
     private Button SelectFile;
     @FXML
     private Button SendFile;
+    private File file;
 
     public ClientBackendController() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml"));
@@ -145,15 +150,18 @@ public class ClientBackendController {
     }
 
     @FXML
-    void SendFile(ActionEvent event) {
+    void SendFile(ActionEvent event) throws IOException {
+        dos.writeUTF("SEND<:>" + file.getName());
+        dos.flush();
         SendFile.setDisable(true);
+        new Thread(new SendingFile(s, file.getAbsolutePath(), chatWith, userName)).start();
     }
 
     @FXML
     void SelectFile(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open File");
-        File file = chooser.showOpenDialog(Send.getScene().getWindow());
+        file = chooser.showOpenDialog(Send.getScene().getWindow());
         String file_name;
         if (file != null) {
             file_name = file.getName();
@@ -164,6 +172,9 @@ public class ClientBackendController {
         }
     }
 
+    void ReciveFile(String fileName) throws FileNotFoundException, IOException {
+        new Thread(new ReceivingFile(s)).start();
+    }
     Task Read = new Task<Void>() {
         @Override
         public Void call() throws Exception {
@@ -179,7 +190,6 @@ public class ClientBackendController {
                         @Override
                         public void run() {
                             Message.setText("");
-
                         }
                     });
                     for (String lines : chats) {
@@ -189,7 +199,6 @@ public class ClientBackendController {
                                 Message.appendText(lines + System.lineSeparator());
                             }
                         });
-
                     }
 
                 } else {
