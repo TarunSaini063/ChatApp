@@ -6,8 +6,6 @@
 package client;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -44,10 +42,11 @@ public class LoginController {
     }
 
     @FXML
-    void login(ActionEvent event) throws IOException {
-        if (username.getText().trim().length() > 0 && password.getText().trim().length() > 0) {
-            clientBackendController = new ClientBackendController();
-            clientBackendController.initialize(stage, username.getText().trim(), password.getText().trim());
+    void login(ActionEvent event) throws IOException {      //When login button is pressed 
+        if (username.getText().trim().length() > 0 && password.getText().trim().length() > 0) {  //check for valid Password and Username 
+            clientBackendController = new ClientBackendController();                                           //Here UserName and Password send to Backend class
+            clientBackendController.initialize(stage, username.getText().trim(), password.getText().trim());  //Backend Class which control all Chat and File transmission is created
+                                                                                                              //Username ans Password of Client is pass as an atgument
         }
     }
 

@@ -23,9 +23,9 @@ public class Client extends Application {
      */
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        while (true) {
+        while (true) { //Waiting for Server
             try {
-                ClientBackendController.s = new Socket("localhost", 1234);
+                ClientBackendController.s = new Socket("localhost", 1234); //Client Socket is Created
                 if (ClientBackendController.s != null) {
                     System.out.println("Client Connected");
                     break;
@@ -35,15 +35,15 @@ public class Client extends Application {
                 Thread.sleep(1000);
             }
         }
-        ClientBackendController.dis = new DataInputStream(ClientBackendController.s.getInputStream());
-        ClientBackendController.dos = new DataOutputStream(ClientBackendController.s.getOutputStream());
+        ClientBackendController.dis = new DataInputStream(ClientBackendController.s.getInputStream()); //DataInputStream of Current client
+        ClientBackendController.dos = new DataOutputStream(ClientBackendController.s.getOutputStream());//DataOutputStream of Current client
         System.out.println("Launching Message Layout in CHATAPP_Client");
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        LoginController loginController = new LoginController();
+        LoginController loginController = new LoginController(); //After Connection is Successfull with server than login page is open
         loginController.initialize(stage);
     }
 

@@ -5,7 +5,6 @@
  */
 package client;
 
-import static client.ClientBackendController.userName;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.StringTokenizer;
-import javafx.scene.control.Alert;
-import javax.swing.ProgressMonitorInputStream;
 
 /**
  *
@@ -60,14 +57,6 @@ public class ReceivingFile implements Runnable {
             System.out.println("Writing file ");
             fos.flush();
             fos.close();
-            if (input != null) {
-//                input.close();
-            }
-//            Alert sameclient = new Alert(Alert.AlertType.INFORMATION);
-//            sameclient.setTitle("File Received");
-//            sameclient.setContentText(filename+" Received from "+ReceiveFrom);
-//            sameclient.setHeaderText("Hello");
-//            sameclient.show();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

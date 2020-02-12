@@ -69,7 +69,7 @@ public class ClientBackendController {
     private File file;
 
     public ClientBackendController() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml")); //javafx Components are initialized
         fxmlLoader.setController(this);
         try {
             parent = (Parent) fxmlLoader.load();
@@ -81,12 +81,12 @@ public class ClientBackendController {
     }
 
     @FXML
-    void SelectedUser(MouseEvent event) throws IOException {
-        chatWith = (String) OnlineUsers.getSelectionModel().getSelectedItem();
+    void SelectedUser(MouseEvent event) throws IOException {        //Whenever Client click on User List(Chat With) 
+        chatWith = (String) OnlineUsers.getSelectionModel().getSelectedItem(); //Get the username of client which chat is  start in chatWith
         if (chatWith == null) {
 
-        } else if (chatWith.equals(userName)) {
-            Alert sameclient = new Alert(AlertType.INFORMATION);
+        } else if (chatWith.equals(userName)) {      //if Client Click on its Own Username than 
+            Alert sameclient = new Alert(AlertType.INFORMATION);  //Alert is shown 
             sameclient.setTitle("Same Client");
             sameclient.setContentText("Cannot chat with yourself");
             sameclient.setHeaderText("Hello " + userName);
@@ -97,8 +97,8 @@ public class ClientBackendController {
             Send.setDisable(true);
             FileName.setDisable(true);
             SelectFile.setDisable(true);
-        } else {
-            dos.writeUTF("ChatWith" + chatWith);
+        } else {                                        //if clicked user is valid then
+            dos.writeUTF("ChatWith" + chatWith);        //we send chatwith with username of person with is chat is going to start to server
             dos.flush();
             System.out.println("ChatWith" + "<:>" + chatWith + "<:>" + userName);
             Message.setDisable(false);
@@ -110,8 +110,8 @@ public class ClientBackendController {
 
     }
 
-    public void UpdatedUsers(String msg) {
-        String[] users = msg.split("<:>");
+    public void UpdatedUsers(String msg) {   //Whenever new user is connected to server this function update the list
+        String[] users = msg.split("<:>");  //of current online user
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -124,21 +124,21 @@ public class ClientBackendController {
     }
 
     @FXML
-    void SendMessage(ActionEvent event) throws IOException {
-        if (chatWith.equals(userName)) {
+    void SendMessage(ActionEvent event) throws IOException { //whenever user click on send button 
+        if (chatWith.equals(userName)) {                    //check if it send message to its self(not allowed
             Alert sameclient = new Alert(AlertType.INFORMATION);
             sameclient.setTitle("Same Client");
             sameclient.setContentText("Cannot chat with yourself");
             sameclient.setHeaderText("Hello " + userName);
             sameclient.show();
-        } else {
+        } else {                                    //Send the message
             dos.writeUTF(Send.getText());
             dos.flush();
             System.out.println("send message: " + Send.getText());
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Message.appendText(userName + "--->" + Send.getText() + System.lineSeparator());
+                    Message.appendText(userName + "--->" + Send.getText() + System.lineSeparator()); //Add this message to current chat window
                     Send.setText("");
                 }
             });
@@ -147,68 +147,68 @@ public class ClientBackendController {
     }
 
     @FXML
-    void SendFile(ActionEvent event) throws IOException {
-        dos.writeUTF("SEND<:>" + file.getName()+"<:>"+file.length());
-        dos.flush();
+    void SendFile(ActionEvent event) throws IOException {       //Whenever user click on send file button
+        dos.writeUTF("SEND<:>" + file.getName()+"<:>"+file.length());// first we tell to server that client is going to send file 
+        dos.flush();                                                 // along with file details
         SendFile.setDisable(true);
-        new Thread(new SendingFile(s, file.getAbsolutePath(), chatWith, userName)).start();
+        new Thread(new SendingFile(s, file.getAbsolutePath(), chatWith, userName)).start(); //start new thread of sendfile class which handle background file transmission
     }
 
     @FXML
-    void SelectFile(ActionEvent event) {
-        FileChooser chooser = new FileChooser();
+    void SelectFile(ActionEvent event) {    //whenever User click on select file 
+        FileChooser chooser = new FileChooser();    //it open system file choser
         chooser.setTitle("Open File");
-        file = chooser.showOpenDialog(Send.getScene().getWindow());
+        file = chooser.showOpenDialog(Send.getScene().getWindow());  //get name of selected file
         String file_name;
-        if (file != null) {
+        if (file != null) {    //if selected file is correct
             file_name = file.getName();
-            FileName.setText(file_name);
+            FileName.setText(file_name);//initialize label with file information
             SendFile.setDisable(false);
         } else {
-            FileName.setText("Error in Selecting File");
+            FileName.setText("Error in Selecting File"); //otherwise show error
         }
     }
 
     void ReciveFile(String details) throws FileNotFoundException, IOException {
-        new Thread(new ReceivingFile(s,details)).start();
-    }
+        new Thread(new ReceivingFile(s,details)).start(); //wherver client is informed by user that file is received by you with file information
+    }                                                     //we start thread of class ReciveFile which handle the receiving file data 
     Task Read = new Task<Void>() {
-        @Override
+        @Override                                           //this thread receive the data send by server after call various method to handle it
         public Void call() throws Exception {
             while (true) {
-                if(dis==null)
+                if(dis==null)                   //if DataInputStream is null initialize it again (first time in client class)
                 {
                     System.out.println("dis is null ");
                     dis=new DataInputStream(s.getInputStream());
                 }
-                String msg = dis.readUTF();
+                String msg = dis.readUTF();         //Read the message from server
                 System.out.println("read message= " + msg + " mesage for " + userName);
-                if (msg.startsWith("UpdatesUsers<:>")) {
+                if (msg.startsWith("UpdatesUsers<:>")) {  //If the message starts which update user then 
                     System.out.println("new user added");
-                    UpdatedUsers(msg.substring(15));
-                } else if (msg.startsWith("Refress<:>")) {
-                    String[] chats = msg.substring(10).split("<:>");
+                    UpdatedUsers(msg.substring(15));        //UpdatedUsers method is called and list of all user is send as an argument
+                } else if (msg.startsWith("Refress<:>")) {  //if message starts with Refress<:>(its mean complete chat between current user and chatWith
+                    String[] chats = msg.substring(10).split("<:>"); //is resend (Previous chat between these users two users
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            Message.setText("");
+                            Message.setText("");  //clear the current message window
                         }
                     });
                     for (String lines : chats) {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                Message.appendText(lines + System.lineSeparator());
+                                Message.appendText(lines + System.lineSeparator()); //append new message to message window
                             }
                         });
                     }
-                } else if (msg.startsWith("RECIEVE<:>")) {
-                    ReciveFile(msg.substring(10));
+                } else if (msg.startsWith("RECIEVE<:>")) {  //if message receive is RECIEVE<:> than server is sending file
+                    ReciveFile(msg.substring(10)); //Call ReceiveFile method which start ReceivingFile thread
                 } else {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            if (chatWith != null && msg.startsWith(chatWith)) {
+                            if (chatWith != null && msg.startsWith(chatWith)) {    //if message receive and is is send by currently connected user than appe
                                 Message.appendText(msg + System.lineSeparator());
                             }
                         }
@@ -218,9 +218,9 @@ public class ClientBackendController {
         }
     };
 
-    public void initialize(Stage stage, String userName, String Password) {
+    public void initialize(Stage stage, String userName, String Password) { //Intialize is called after constructer
         stage.setTitle(userName);
-        stage.setScene(scene);
+        stage.setScene(scene);      //set javafx elements property
         stage.hide();
         stage.show();
         this.userName = userName;
@@ -239,7 +239,7 @@ public class ClientBackendController {
         FileName.setDisable(true);
         SendFile.setDisable(true);
         FileName.setEditable(false);
-        Thread th = new Thread(Read);
+        Thread th = new Thread(Read); //start the reading thread which handle the message received from server
         th.setDaemon(true);
         th.start();
     }
