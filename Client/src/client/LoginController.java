@@ -37,7 +37,7 @@ public class LoginController {
             parent = (Parent) fxmlLoader.load();    //create parent and set scene of javafx layout
             scene = new Scene(parent);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();  // error during fxml file loading 
         }
     }
 
