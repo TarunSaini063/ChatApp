@@ -45,34 +45,34 @@ public class ClientBackendController {
      */
     private Parent parent;
     private Scene scene;
-    static Socket s;
-    static ServerSocket ss;
+    static Socket s; //socket throught client is connect to server
+    static ServerSocket ss; 
     static DataInputStream dis;
     static DataOutputStream dos;
-    ObservableList<String> UsersOnline = FXCollections.observableArrayList();
+    ObservableList<String> UsersOnline = FXCollections.observableArrayList(); //to update elements of listview
     @FXML
-    private ListView<String> OnlineUsers;
+    private ListView<String> OnlineUsers; //listview of current online users
     @FXML
-    private TextArea Message;
+    private TextArea Message; //chat window
     @FXML
-    private TextField Send;
+    private TextField Send; //text file to send message
     public static String userName, Password;
     @FXML
     private Button sendButton;
     String chatWith;
     @FXML
-    private TextField FileName;
+    private TextField FileName; //file name is shown here whenever file is select to send
     @FXML
-    private Button SelectFile;
+    private Button SelectFile; //button to select file (open FileChooser)
     @FXML
-    private Button SendFile;
-    private File file;
+    private Button SendFile;  //button to send file
+    private File file; //file pointer (file is going to send)
 
     public ClientBackendController() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml")); //javafx Components are initialized
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientBackend.fxml")); //javafx Components are loaded
         fxmlLoader.setController(this);
         try {
-            parent = (Parent) fxmlLoader.load();
+            parent = (Parent) fxmlLoader.load(); //create parent and set scene of javafx layout
             scene = new Scene(parent);
         } catch (IOException e) {
             e.printStackTrace();

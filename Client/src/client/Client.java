@@ -44,7 +44,7 @@ public class Client extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LoginController loginController = new LoginController(); //After Connection is Successfull with server than login page is open
-        loginController.initialize(stage);
+        loginController.initialize(stage);    //initialize javafx elements
     }
 
 }

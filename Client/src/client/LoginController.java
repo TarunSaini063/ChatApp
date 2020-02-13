@@ -24,17 +24,17 @@ public class LoginController {
     private Parent parent;
     private Scene scene;
     private Stage stage;
-    private ClientBackendController clientBackendController = null;
+    private ClientBackendController clientBackendController = null; //create object pointer of backed class 
     @FXML
     private TextField username;
     @FXML
     private TextField password;
 
     public LoginController() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Login.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Login.fxml")); //load javafx  from fxml  file
         fxmlLoader.setController(this);
         try {
-            parent = (Parent) fxmlLoader.load();
+            parent = (Parent) fxmlLoader.load();    //create parent and set scene of javafx layout
             scene = new Scene(parent);
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,7 +50,7 @@ public class LoginController {
         }
     }
 
-    public void initialize(Stage stage) {
+    public void initialize(Stage stage) { //initialize javafx elements
 
         this.stage = stage;
         stage.setTitle("User Login");
