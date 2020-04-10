@@ -11,3 +11,6 @@
 <p align="center">
 <img src="https://github.com/TarunSaini063/ChatApp/blob/master/Screenshots/start4.png"/>
 </p>
+<p align="center">
+<img src='https://bettercodehub.com/edge/badge/TarunSaini063/ChatApp?branch=master'>
+</p>
